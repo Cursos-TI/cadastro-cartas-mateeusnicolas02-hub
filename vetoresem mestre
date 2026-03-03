@@ -1,0 +1,168 @@
+#include <stdio.h>
+
+#define TAM 10
+#define TAM_HAB 5
+
+int main() {
+
+   
+    // 1. CRIANDO O TABULEIRO 10x10
+  
+
+    int tabuleiro[TAM][TAM];
+
+    // Inicializa com água (0)
+    for(int i = 0; i < TAM; i++) {
+        for(int j = 0; j < TAM; j++) {
+            tabuleiro[i][j] = 0;
+        }
+    }
+
+   
+    // 2. POSICIONANDO ALGUNS NAVIOS
+ 
+
+    // Navio horizontal
+    for(int i = 0; i < 3; i++) {
+        tabuleiro[2][i+1] = 3;
+    }
+
+    // Navio vertical
+    for(int i = 0; i < 3; i++) {
+        tabuleiro[i+5][7] = 3;
+    }
+
+    // 3. CRIANDO MATRIZES DE HABILIDADE
+  
+
+    int cone[TAM_HAB][TAM_HAB];
+    int cruz[TAM_HAB][TAM_HAB];
+    int octaedro[TAM_HAB][TAM_HAB];
+
+    // ---------- HABILIDADE CONE ----------
+    // Cone apontando para baixo
+    for(int i = 0; i < TAM_HAB; i++) {
+        for(int j = 0; j < TAM_HAB; j++) {
+
+            // Começa com 0
+            cone[i][j] = 0;
+
+            // Condição do cone
+            if(j >= 2 - i && j <= 2 + i) {
+                cone[i][j] = 1;
+            }
+        }
+    }
+
+    // ---------- HABILIDADE CRUZ ----------
+    for(int i = 0; i < TAM_HAB; i++) {
+        for(int j = 0; j < TAM_HAB; j++) {
+
+            cruz[i][j] = 0;
+
+            // Linha central ou coluna central
+            if(i == 2 || j == 2) {
+                cruz[i][j] = 1;
+            }
+        }
+    }
+
+    // ---------- HABILIDADE OCTAEDRO (LOSANGO) ----------
+    for(int i = 0; i < TAM_HAB; i++) {
+        for(int j = 0; j < TAM_HAB; j++) {
+
+            octaedro[i][j] = 0;
+
+            // Distância de Manhattan até o centro
+            if(abs(i - 2) + abs(j - 2) <= 2) {
+                octaedro[i][j] = 1;
+            }
+        }
+    }
+
+   
+    // 4. SOBREPOR HABILIDADES NO TABULEIRO
+    
+
+    int origem_linha, origem_coluna;
+
+    // -------- Aplicando CONE --------
+    origem_linha = 4;
+    origem_coluna = 4;
+
+    for(int i = 0; i < TAM_HAB; i++) {
+        for(int j = 0; j < TAM_HAB; j++) {
+
+            int linha_tab = origem_linha - 2 + i;
+            int coluna_tab = origem_coluna - 2 + j;
+
+            if(linha_tab >= 0 && linha_tab < TAM &&
+               coluna_tab >= 0 && coluna_tab < TAM) {
+
+                if(cone[i][j] == 1 && tabuleiro[linha_tab][coluna_tab] == 0) {
+                    tabuleiro[linha_tab][coluna_tab] = 5;
+                }
+            }
+        }
+    }
+
+    // -------- Aplicando CRUZ --------
+    origem_linha = 7;
+    origem_coluna = 2;
+
+    for(int i = 0; i < TAM_HAB; i++) {
+        for(int j = 0; j < TAM_HAB; j++) {
+
+            int linha_tab = origem_linha - 2 + i;
+            int coluna_tab = origem_coluna - 2 + j;
+
+            if(linha_tab >= 0 && linha_tab < TAM &&
+               coluna_tab >= 0 && coluna_tab < TAM) {
+
+                if(cruz[i][j] == 1 && tabuleiro[linha_tab][coluna_tab] == 0) {
+                    tabuleiro[linha_tab][coluna_tab] = 5;
+                }
+            }
+        }
+    }
+
+    // -------- Aplicando OCTAEDRO --------
+    origem_linha = 1;
+    origem_coluna = 7;
+
+    for(int i = 0; i < TAM_HAB; i++) {
+        for(int j = 0; j < TAM_HAB; j++) {
+
+            int linha_tab = origem_linha - 2 + i;
+            int coluna_tab = origem_coluna - 2 + j;
+
+            if(linha_tab >= 0 && linha_tab < TAM &&
+               coluna_tab >= 0 && coluna_tab < TAM) {
+
+                if(octaedro[i][j] == 1 && tabuleiro[linha_tab][coluna_tab] == 0) {
+                    tabuleiro[linha_tab][coluna_tab] = 5;
+                }
+            }
+        }
+    }
+
+    
+    // 5. EXIBINDO O TABULEIRO FINAL
+  
+    printf("\nTABULEIRO FINAL:\n\n");
+
+    for(int i = 0; i < TAM; i++) {
+        for(int j = 0; j < TAM; j++) {
+
+            if(tabuleiro[i][j] == 0)
+                printf(". ");   // Água
+            else if(tabuleiro[i][j] == 3)
+                printf("N ");   // Navio
+            else if(tabuleiro[i][j] == 5)
+                printf("* ");   // Área de habilidade
+        }
+        printf("\n");
+    }
+
+    return 0;
+}
